@@ -53,6 +53,7 @@ dependencies:
   uuid:
   flutter_rating_bar:
   flutter_launcher_icons:
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pest_control_flutter/screens/admin/signup_admin.dart';
 import 'package:pest_control_flutter/screens/auth/verify_email.dart';
-import 'package:lottie/lottie.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -16,15 +16,14 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController numController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
-  List<String> list = ["Plumber"];
-  bool userPassWrong = false;
+  TextEditingController confirmPassController = TextEditingController();
   bool obscureText = true;
-  bool userEmailWrong = false;
-  bool userNameWrong = false;
+  bool obscureTextConfirm = true;
   bool tickMark = false;
 
   @override
@@ -42,285 +41,180 @@ class _SignupPageState extends State<SignupPage> {
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(
-                height: mediaQuery.size.height * 0.02,
-                // child: Lottie.asset('assets/images/login.json')
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Welcome to a Pest-Free Environment",
+                  style: GoogleFonts.novaFlat(
+                    fontSize: mediaQuerySize.width * 0.065,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
               ),
-              Column(
+              SizedBox(height: mediaQuery.size.width * 0.035),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: firstNameController,
+                  labelText: 'First Name',
+                  prefixIcon: CupertinoIcons.person,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: lastNameController,
+                  labelText: 'Last Name',
+                  prefixIcon: CupertinoIcons.person,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: emailController,
+                  labelText: 'Email',
+                  prefixIcon: Icons.email_outlined,
+                  validator: (value) {
+                    if (value!.isEmpty || !value.contains('@')) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: passController,
+                  labelText: 'Password',
+                  obscureText: obscureText,
+                  prefixIcon: CupertinoIcons.lock,
+                  validator: (value) {
+                    if (value!.length < 8) {
+                      return 'Password must be at least 8 characters long';
+                    }
+                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                      return 'Password must contain at least one uppercase letter';
+                    }
+                    if (!RegExp(r'[0-9]').hasMatch(value)) {
+                      return 'Password must contain at least one number';
+                    }
+                    return null;
+                  },
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureText = !obscureText;
+                      });
+                    },
+                    child: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: confirmPassController,
+                  labelText: 'Confirm Password',
+                  obscureText: obscureTextConfirm,
+                  prefixIcon: CupertinoIcons.lock,
+                  validator: (value) {
+                    if (value != passController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureTextConfirm = !obscureTextConfirm;
+                      });
+                    },
+                    child: Icon(
+                      obscureTextConfirm
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: _buildTextField(
+                  controller: phoneController,
+                  labelText: 'Phone Number',
+                  prefixIcon: Icons.phone,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter a valid phone number';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: mediaQuery.size.width * 0.05),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        "Create Account",
-                        style: TextStyle(
-                          fontSize: mediaQuerySize.width * 0.10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ),
-                  ]),
-                  SizedBox(height: mediaQuery.size.width * 0.06),
-                  SizedBox(
-                    width: mediaQuery.size.width * 0.9,
-                    child: SizedBox(
-                      height: 90,
-                      child: TextFormField(
-                        controller: nameController,
-                        validator: (value) {
-                          if (value!.trim().isEmpty) {
-                            return 'Please enter your name';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          prefixIcon: const Icon(CupertinoIcons.person),
-                          labelText: 'User Name',
-                          labelStyle: TextStyle(
-                            fontSize: mediaQuery.size.width * 0.04,
-                            color: Colors.black,
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.04),
-                  SizedBox(
-                    width: mediaQuery.size.width * 0.9,
-                    child: SizedBox(
-                      height: 90,
-                      child: TextFormField(
-                        controller: emailController,
-                        validator: (value) {
-                          if (value!.trim().isEmpty || !value.trim().contains('@')) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          labelText: 'Email',
-                          labelStyle: TextStyle(
-                            fontSize: mediaQuery.size.width * 0.04,
-                            color: Colors.black,
-                          ),
-                          prefixIcon: const Icon(Icons.email_outlined),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.04),
-                  SizedBox(
-                    width: mediaQuery.size.width * 0.9,
-                    child: SizedBox(
-                      height: 90,
-                      child: TextFormField(
-                        controller: passController,
-                        obscureText: obscureText,
-                        validator: (value) {
-                          if (value!.trim().length < 6) {
-                            return 'Password must be at least 6 characters long';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          labelText: 'Password',
-                          prefixIcon: const Icon(CupertinoIcons.lock),
-                          labelStyle: TextStyle(
-                            fontSize: mediaQuery.size.width * 0.04,
-                            color: Colors.black,
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          suffixIcon: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                obscureText = !obscureText;
-                              });
-                            },
-                            child: Icon(
-                              obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.04),
-                  SizedBox(
-                    width: mediaQuery.size.width * 0.9,
-                    child: SizedBox(
-                      height: 90,
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: numController,
-                        validator: (value) {
-                          if (value!.trim().isEmpty) {
-                            return 'Please enter a valid phone number';
-                          }
-                          return null;
-                        },
-                        maxLength: 11,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          labelText: 'Phone Number',
-                          labelStyle: TextStyle(
-                            fontSize: mediaQuery.size.width * 0.04,
-                            color: Colors.black,
-                          ),
-                          prefixIcon: const Icon(Icons.add_call),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.07),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            tickMark = !tickMark;
-                          });
-                        },
-                        child: tickMark
-                            ? const Icon(CupertinoIcons.check_mark)
-                            : const Icon(CupertinoIcons.square,
-                            color: CupertinoColors.inactiveGray),
-                      ),
-                      const Text(" I've read and agree to "),
-                      const Text(
-                        "Terms & Conditions",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.07),
                   GestureDetector(
                     onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (!tickMark) {
-                          showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return CupertinoAlertDialog(
-                                title: const Text(
-                                    "Agree to Terms and Conditions"),
-                                actions: [
-                                  CupertinoDialogAction(
-                                    child: const Text("OK"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        } else {
-                          newUser();
-                        }
-                      }
+                      setState(() {
+                        tickMark = !tickMark;
+                      });
                     },
-                    child: Hero(
-                      tag: 'ButtonS I G N U P',
-                      child: Material(
-                        child: InkWell(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            alignment: Alignment.center,
-                            height: mediaQuery.size.width * 0.15,
-                            width: mediaQuery.size.width * 0.9,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                      "SIGN UP",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: mediaQuerySize.width * 0.054,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  size: mediaQuerySize.width * 0.08,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                    child: tickMark
+                        ? const Icon(CupertinoIcons.check_mark)
+                        : const Icon(CupertinoIcons.square,
+                            color: CupertinoColors.inactiveGray),
+                  ),
+                  const Text(" I've read and agree to "),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to Terms and Conditions page
+                    },
+                    child: const Text(
+                      "Terms & Conditions",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
-                  ),
-                  SizedBox(height: mediaQuery.size.width * 0.05),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("New as Service Provider? "),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => const SignupAdmin(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Create Account",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
+              SizedBox(height: mediaQuery.size.width * 0.07),
+              GestureDetector(
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    if (!tickMark) {
+                      _showErrorDialog(
+                          "Please agree to the terms and conditions.");
+                    } else {
+                      _registerUser();
+                    }
+                  }
+                },
+                child: _buildSignUpButton(mediaQuerySize),
+              ),
+              // SizedBox(height: mediaQuery.size.width * 0.05),
+              // _buildSignUpRedirect(),
             ],
           ),
         ),
@@ -328,13 +222,105 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Future<void> newUser() async {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData prefixIcon,
+    bool obscureText = false,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 20),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        validator: validator,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          labelText: labelText,
+          prefixIcon: Icon(prefixIcon),
+          suffixIcon: suffixIcon,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignUpButton(Size mediaQuerySize) {
+    return Hero(
+      tag: 'ButtonSIGNUP',
+      child: Material(
+        child: InkWell(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            alignment: Alignment.center,
+            height: mediaQuerySize.width * 0.15,
+            width: mediaQuerySize.width * 0.9,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    "SIGN UP",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: mediaQuerySize.width * 0.054,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward,
+                  size: mediaQuerySize.width * 0.08,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  //
+  // Widget _buildSignUpRedirect() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       const Text("New as Service Provider? "),
+  //       GestureDetector(
+  //         onTap: () {
+  //           Navigator.of(context).push(
+  //             CupertinoPageRoute(
+  //               builder: (context) => const SignupAdmin(),
+  //             ),
+  //           );
+  //         },
+  //         child: const Text(
+  //           "Create Account",
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.bold,
+  //             fontSize: 14,
+  //             decoration: TextDecoration.underline,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Future<void> _registerUser() async {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent dialog from being dismissed
+      barrierDismissible: false,
       builder: (context) {
-       return SizedBox(
-          height: 30,
+        return Center(
           child: Lottie.asset('assets/images/loading.json', repeat: true),
         );
       },
@@ -342,70 +328,50 @@ class _SignupPageState extends State<SignupPage> {
 
     try {
       final UserCredential userCredential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passController.text.trim(),
       );
 
-      final User? userData = userCredential.user;
+      final User? user = userCredential.user;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'firstName': firstNameController.text,
+          'lastName': lastNameController.text,
+          'phone': phoneController.text,
+          'email': emailController.text.trim(),
+          'uid': user.uid,
+        });
 
-      if (userData != null) {
-        await userData.updateDisplayName(nameController.text.trim());
-
-        storeUserDataInBackend();
-        // Send verification email
-        await userData.sendEmailVerification();
-        // Dismiss the dialog
-        Navigator.pop(context);
-
-        // Navigate to VerifyEmailPage
-        Navigator.push(
-          context,
-          MaterialPageRoute(
+        Navigator.of(context).pushReplacement(
+          CupertinoPageRoute(
             builder: (context) => VerifyEmailPage(
-              email: userData.email!,
+              email: emailController.text.trim(),
             ),
           ),
         );
       }
-    } catch (error) {
-      String newError =
-      error.toString().replaceAll('[firebase_auth/email-already-in-use]', '');
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 2),
-        content: Text(
-          newError,
-          style: const TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-      ));
+    } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+      _showErrorDialog(e.message ?? 'An error occurred');
     }
   }
 
-  Future<void> storeUserDataInBackend() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    try
-        {
-          if (user != null) {
-            DatabaseReference userRef =
-            FirebaseDatabase.instance.ref().child("users").child(user.uid);
-            Map<String, dynamic> userDataMap = {
-              "id": user.uid,
-              "name": nameController.text.trim(),
-              "phone":numController.text.trim(),
-              "email": emailController.text.trim(),
-              "password": passController.text.trim(),
-              "role":"client"
-            };
-            print('User data stored in Firestore');
-            await firestore.collection('users').doc(user.uid).set(userDataMap);
-          }
-        }
-        catch(e)
-    {
-      print(e.toString());
-    }
+  void _showErrorDialog(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
