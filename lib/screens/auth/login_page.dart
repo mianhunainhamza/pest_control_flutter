@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pest_control_flutter/screens/admin/signin_admin.dart';
+import 'package:pest_control_flutter/screens/auth/verify_email.dart';
 import 'package:pest_control_flutter/screens/home_page_editor.dart';
 import 'package:pest_control_flutter/screens/auth/forget_pass_screen.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pest_control_flutter/widgets/custom_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -90,9 +92,10 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         SizedBox(
                           height: 90,
-                          child: TextFormField(
+                          child: buildTextField(
+                            prefixIcon:Icons.email,
                             controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
+                            labelText: 'Email',
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
@@ -102,31 +105,15 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               return null;
                             },
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                              ),
-                              prefixIcon: const Icon(Icons.email),
-                              labelText: 'Email',
-                              labelStyle: TextStyle(
-                                fontSize: mediaQuerySize.width * 0.04,
-                                color: Colors.black,
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                              ),
-                            ),
                           ),
                         ),
                         SizedBox(height: mediaQuerySize.width * 0.03),
                         SizedBox(
                           height: 90,
-                          child: TextFormField(
+                          child: buildTextField(
                             controller: passController,
                             obscureText: _obscureText,
+                            labelText: 'Password',
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your password';
@@ -136,34 +123,19 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               return null;
                             },
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                              ),
-                              prefixIcon: const Icon(Icons.lock),
-                              labelText: 'Password',
-                              labelStyle: TextStyle(
-                                fontSize: mediaQuerySize.width * 0.04,
-                                color: Colors.black,
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                              ),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                                child: Icon(
-                                  _obscureText
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.grey,
-                                ),
+                            prefixIcon:Icons.lock,
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+
+                              child: Icon(
+                                _obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
                               ),
                             ),
                           ),
@@ -296,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 // Function to log in the user
-  void loginUser(context, emailController, passController) async {
+  void loginUser(context, TextEditingController emailController, passController) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     BuildContext? dialogContext;
 
@@ -369,14 +341,15 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         } else {
-          await userData.sendEmailVerification();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-              'A verification email has been sent to your account',
-              style: TextStyle(color: CupertinoColors.white),
-            ),
-          ));
-          Navigator.pop(context);
+          // await userData.sendEmailVerification();
+          // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          //   backgroundColor: Colors.white,
+          //   content: Text(
+          //     'A verification email has been sent to your account',
+          //     style: TextStyle(color: CupertinoColors.black),
+          //   ),
+          // ));
+          Navigator.push(context,CupertinoPageRoute(builder: (c) => VerifyEmailPage(email: emailController.text.trim())));
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -486,7 +459,7 @@ class _LoginPageState extends State<LoginPage> {
             context: context,
             builder: (context) {
               return CupertinoAlertDialog(
-                title: Text('Login as an Admin'),
+                title: const Text('Login as an Admin'),
                 actions: [
                   CupertinoDialogAction(
                     child: const Text("OK"),

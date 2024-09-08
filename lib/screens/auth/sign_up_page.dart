@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pest_control_flutter/screens/admin/signup_admin.dart';
 import 'package:pest_control_flutter/screens/auth/verify_email.dart';
+
+import '../../widgets/custom_text_field.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -39,210 +42,184 @@ class _SignupPageState extends State<SignupPage> {
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  "Welcome to a Pest-Free Environment",
-                  style: GoogleFonts.novaFlat(
-                    fontSize: mediaQuerySize.width * 0.065,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
-              SizedBox(height: mediaQuery.size.width * 0.035),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: firstNameController,
-                  labelText: 'First Name',
-                  prefixIcon: CupertinoIcons.person,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: lastNameController,
-                  labelText: 'Last Name',
-                  prefixIcon: CupertinoIcons.person,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: emailController,
-                  labelText: 'Email',
-                  prefixIcon: Icons.email_outlined,
-                  validator: (value) {
-                    if (value!.isEmpty || !value.contains('@')) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: passController,
-                  labelText: 'Password',
-                  obscureText: obscureText,
-                  prefixIcon: CupertinoIcons.lock,
-                  validator: (value) {
-                    if (value!.length < 8) {
-                      return 'Password must be at least 8 characters long';
-                    }
-                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                      return 'Password must contain at least one uppercase letter';
-                    }
-                    if (!RegExp(r'[0-9]').hasMatch(value)) {
-                      return 'Password must contain at least one number';
-                    }
-                    return null;
-                  },
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        obscureText = !obscureText;
-                      });
-                    },
-                    child: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.grey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 20),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "Welcome to a Pest-Free Environment",
+                    style: GoogleFonts.actor(
+                      fontSize: mediaQuerySize.width * 0.065,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: confirmPassController,
-                  labelText: 'Confirm Password',
-                  obscureText: obscureTextConfirm,
-                  prefixIcon: CupertinoIcons.lock,
-                  validator: (value) {
-                    if (value != passController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        obscureTextConfirm = !obscureTextConfirm;
-                      });
+                SizedBox(height: mediaQuery.size.width * 0.06),
+                SizedBox(
+                  height: 90,
+                  child: buildTextField(
+                    controller: firstNameController,
+                    labelText: 'First Name',
+                    prefixIcon: CupertinoIcons.person,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your first name';
+                      }
+                      return null;
                     },
-                    child: Icon(
-                      obscureTextConfirm
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: Colors.grey,
-                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 80,
-                child: _buildTextField(
-                  controller: phoneController,
-                  labelText: 'Phone Number',
-                  prefixIcon: Icons.phone,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a valid phone number';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(height: mediaQuery.size.width * 0.05),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        tickMark = !tickMark;
-                      });
+                SizedBox(
+                  height: 90,
+                  child: buildTextField(
+                    controller: lastNameController,
+                    labelText: 'Last Name',
+                    prefixIcon: CupertinoIcons.person,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your last name';
+                      }
+                      return null;
                     },
-                    child: tickMark
-                        ? const Icon(CupertinoIcons.check_mark)
-                        : const Icon(CupertinoIcons.square,
-                            color: CupertinoColors.inactiveGray),
                   ),
-                  const Text(" I've read and agree to "),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigate to Terms and Conditions page
+                ),
+                SizedBox(
+                  height: 90,
+                  child: buildTextField(
+                    controller: emailController,
+                    labelText: 'Email',
+                    prefixIcon: Icons.email_outlined,
+                    validator: (value) {
+                      if (value!.isEmpty || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
                     },
-                    child: const Text(
-                      "Terms & Conditions",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
+                  ),
+                ),
+                SizedBox(
+                  height: 90,
+                  child: buildTextField(
+                    controller: passController,
+                    labelText: 'Password',
+                    obscureText: obscureText,
+                    prefixIcon: CupertinoIcons.lock,
+                    validator: (value) {
+                      if (value!.length < 8) {
+                        return 'Password must be at least 8 characters long';
+                      }
+                      if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                        return 'Password must contain at least one uppercase letter';
+                      }
+                      if (!RegExp(r'[0-9]').hasMatch(value)) {
+                        return 'Password must contain at least one number';
+                      }
+                      return null;
+                    },
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                      child: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: mediaQuery.size.width * 0.07),
-              GestureDetector(
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    if (!tickMark) {
-                      _showErrorDialog(
-                          "Please agree to the terms and conditions.");
-                    } else {
-                      _registerUser();
+                ),
+                SizedBox(
+                  height: 90,
+                  child: buildTextField(
+                    controller: confirmPassController,
+                    labelText: 'Confirm Password',
+                    obscureText: obscureTextConfirm,
+                    prefixIcon: CupertinoIcons.lock,
+                    validator: (value) {
+                      if (value != passController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                  child: IntlPhoneField(
+                    disableLengthCheck: true,
+                    decoration: InputDecoration(
+                      labelText: 'Phone Number',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black.withOpacity(.2)),
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black.withOpacity(.7)),
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                    initialCountryCode: 'US',
+                    onChanged: (phone) {
+                      print(phone.completeNumber);
+                    },
+                  )
+                ),
+                SizedBox(height: mediaQuery.size.width * 0.02),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      tickMark = !tickMark;
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      tickMark
+                          ? const Icon(CupertinoIcons.check_mark)
+                          : const Icon(CupertinoIcons.square,
+                              color: CupertinoColors.inactiveGray),
+                      const Text(" I've read and agree to "),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to Terms and Conditions page
+                        },
+                        child: const Text(
+                          "Terms & Conditions",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: mediaQuery.size.width * 0.05),
+                GestureDetector(
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      if (!tickMark) {
+                        _showErrorDialog(
+                            "Please agree to the terms and conditions.");
+                      } else {
+                        _registerUser();
+                      }
                     }
-                  }
-                },
-                child: _buildSignUpButton(mediaQuerySize),
-              ),
-              // SizedBox(height: mediaQuery.size.width * 0.05),
-              // _buildSignUpRedirect(),
-            ],
+                  },
+                  child: _buildSignUpButton(mediaQuerySize),
+                ),
+                // SizedBox(height: mediaQuery.size.width * 0.05),
+                // _buildSignUpRedirect(),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String labelText,
-    required IconData prefixIcon,
-    bool obscureText = false,
-    String? Function(String?)? validator,
-    Widget? suffixIcon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 20),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        validator: validator,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          labelText: labelText,
-          prefixIcon: Icon(prefixIcon),
-          suffixIcon: suffixIcon,
         ),
       ),
     );

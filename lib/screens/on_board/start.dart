@@ -78,7 +78,7 @@ class _StartPageState extends State<StartPage> {
               child: Column(
                 children: [
                   Text(
-                    'Welcome to a Pest-Free Life',
+                    'Welcome to a Pest-Free Environment',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,

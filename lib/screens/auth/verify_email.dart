@@ -8,9 +8,9 @@ class VerifyEmailPage extends StatefulWidget {
   final String email;
 
   const VerifyEmailPage({
-    Key? key,
+    super.key,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
@@ -21,13 +21,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     var mediaQuerySize = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'Verify Email',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
@@ -64,7 +60,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 alignment: Alignment.center,
                 height: mediaQuerySize.width * 0.13,
                 width: mediaQuerySize.width * 0.7,
-                child:const Text(
+                child: const Text(
                   "Resend Verification Email",
                   style: TextStyle(
                     color: Colors.white,
@@ -78,17 +74,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: Colors.white,
-        onPressed:
-            ()
-        {
-          Navigator.push(context, CupertinoPageRoute(builder: (c) => const LoginPage()));
-        },
-      child: const Icon(Icons.login,color: Colors.black,),),
     );
   }
+
   Future<void> sendVerification() async {
     User? user = FirebaseAuth.instance.currentUser;
 
@@ -104,8 +92,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             backgroundColor: Colors.white,
           ),
         );
-      } catch (e)
-      {
+      } catch (e) {
         print("Error sending verification email: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -119,7 +106,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(
+        const SnackBar(
           content: Text(
             "User is already verified",
             style: TextStyle(color: Colors.black),
@@ -129,5 +116,4 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     }
   }
-
 }

@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
   }
 
   Future<bool> checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 1)); // Simulate asynchronous operation
+    await Future.delayed(const Duration(seconds: 1));
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool("loggedIn") ?? false;
   }
