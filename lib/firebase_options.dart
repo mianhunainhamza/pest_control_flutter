@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -53,10 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCo6Pm_ExTAWz2fw9QV2vqrT2Gc46wQnVA',
-    appId: '1:590960956331:android:f1f453a421fb7669e778ee',
-    messagingSenderId: '590960956331',
-    projectId: 'homicare-1',
-    storageBucket: 'homicare-1.appspot.com',
+    apiKey: 'AIzaSyDSos9chrWp1Uds8kCv_ZpyOd_ZyoGxuOg',
+    appId: '1:881326841035:android:acdeac23377363a8cd8f4e',
+    messagingSenderId: '881326841035',
+    projectId: 'pest-control-b0140',
+    storageBucket: 'pest-control-b0140.appspot.com',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyA7aRFmS3HsqiTB4xKzHjPG_4TT7gS2mfY',
+    appId: '1:881326841035:ios:d233666f81d0e461cd8f4e',
+    messagingSenderId: '881326841035',
+    projectId: 'pest-control-b0140',
+    storageBucket: 'pest-control-b0140.appspot.com',
+    iosBundleId: 'com.example.pestControlFlutter',
+  );
+
 }

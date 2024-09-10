@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:lottie/lottie.dart';
 import 'package:pest_control_flutter/screens/admin/home_editor_admin.dart';
 import 'package:pest_control_flutter/screens/home_page_editor.dart';
 import 'package:pest_control_flutter/screens/on_board/start.dart';
@@ -15,7 +14,6 @@ void main() async {
 
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform); // Initialize Firebase
-    await FirebaseApi().initNotifications();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool("loggedIn") ?? false;
